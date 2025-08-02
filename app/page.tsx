@@ -1,95 +1,66 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { get } from 'http';
+import Link from 'next/link';
+import React from 'react';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
-export default function Home() {
+
+async function getData(){
+  const res = await fetch('https://www.melivecode.com/api/attractions')
+  if(!res.ok){
+    throw new Error('Failed to fetch')
+  }
+  return res.json()
+}
+interface attraction {
+  id: number,
+  name: string,
+  detail: string,
+  coverimage: string,
+  latitude: number,
+  longitude: number
+}
+
+export default async function page() {
+  const data = await getData()
+  console.log(data)
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    <Container maxWidth="md">
+      <h1>Attractions</h1>
+      <Grid container spacing={2}>
+      { data.map((a: attraction)=>(
+        <Grid size={{ xs: 12, md: 4 }} key={a.id}>
+            <Card>
+      <CardMedia
+        sx={{ height: 140 }}
+        image={a.coverimage}
+        title={a.name}
+      />
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+          {a.name}
+        </Typography>
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          {a.detail}
+        </Typography>
+        <Link href={'/'+a.id}>
+          Learn More
+        </Link>
+      </CardContent>
+      
+       
+    </Card>
+          </Grid>
+      )) }
+      </Grid>
+    </Container>
+  )
 }
