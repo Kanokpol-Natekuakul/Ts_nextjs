@@ -12,9 +12,9 @@ import Box from '@mui/material/Box';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 interface PageParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 interface AttractionResponse {
@@ -49,7 +49,8 @@ async function getData(id: string): Promise<AttractionResponse | null> {
 }
 
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
-  const data = await getData(params.id);
+  const { id } = await params;
+  const data = await getData(id);
   
   if (!data) {
     return {
@@ -69,7 +70,8 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 }
 
 export default async function AttractionDetailPage({ params }: PageParams) {
-  const data = await getData(params.id);
+  const { id } = await params;
+  const data = await getData(id);
 
   if (!data) {
     notFound();
